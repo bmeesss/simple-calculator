@@ -10,43 +10,44 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: #f4f4f9;
+            background: #e6e6fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .calculator {
-            background: #222;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
         }
 
         .display {
             width: 100%;
-            height: 60px;
+            height: 70px;
             background: #000;
             color: #0f0;
             text-align: right;
-            font-size: 2rem;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            font-size: 2.2rem;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
             overflow-x: auto;
         }
 
         .buttons {
             display: grid;
-            grid-template-columns: repeat(4, 70px);
-            grid-gap: 10px;
+            grid-template-columns: repeat(4, 80px);
+            grid-gap: 12px;
         }
 
         button {
             padding: 20px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: 0.2s;
+            position: relative;
         }
 
         button:hover {
@@ -68,8 +69,30 @@
             color: #fff;
         }
 
+        .reset {
+            grid-column: span 2;
+            background: #d9534f;
+            color: #fff;
+        }
+
         button:active {
             transform: scale(0.95);
+        }
+
+        /* Tooltip */
+        button[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #222;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            white-space: nowrap;
+            font-size: 0.8rem;
+            opacity: 0.9;
         }
     </style>
 </head>
@@ -78,33 +101,33 @@
         <div id="display" class="display">0</div>
         <div class="buttons">
             <!-- Row 1 -->
-            <button class="special" onclick="clearDisplay()">C</button>
-            <button class="special" onclick="deleteLast()">DEL</button>
-            <button class="special" onclick="percent()">%</button>
-            <button class="operator" onclick="appendOperator('/')">÷</button>
+            <button class="special" onclick="clearDisplay()" data-tooltip="Clear current input">C</button>
+            <button class="reset" onclick="resetCalculator()" data-tooltip="Reset everything">RESET</button>
+            <button class="special" onclick="percent()" data-tooltip="Percentage">%</button>
+            <button class="operator" onclick="appendOperator('/')" data-tooltip="Division">÷</button>
 
             <!-- Row 2 -->
-            <button class="number" onclick="appendNumber('7')">7</button>
-            <button class="number" onclick="appendNumber('8')">8</button>
-            <button class="number" onclick="appendNumber('9')">9</button>
-            <button class="operator" onclick="appendOperator('*')">×</button>
+            <button class="number" onclick="appendNumber('7')" data-tooltip="Number 7">7</button>
+            <button class="number" onclick="appendNumber('8')" data-tooltip="Number 8">8</button>
+            <button class="number" onclick="appendNumber('9')" data-tooltip="Number 9">9</button>
+            <button class="operator" onclick="appendOperator('*')" data-tooltip="Multiplication">×</button>
 
             <!-- Row 3 -->
-            <button class="number" onclick="appendNumber('4')">4</button>
-            <button class="number" onclick="appendNumber('5')">5</button>
-            <button class="number" onclick="appendNumber('6')">6</button>
-            <button class="operator" onclick="appendOperator('-')">-</button>
+            <button class="number" onclick="appendNumber('4')" data-tooltip="Number 4">4</button>
+            <button class="number" onclick="appendNumber('5')" data-tooltip="Number 5">5</button>
+            <button class="number" onclick="appendNumber('6')" data-tooltip="Number 6">6</button>
+            <button class="operator" onclick="appendOperator('-')" data-tooltip="Subtraction">-</button>
 
             <!-- Row 4 -->
-            <button class="number" onclick="appendNumber('1')">1</button>
-            <button class="number" onclick="appendNumber('2')">2</button>
-            <button class="number" onclick="appendNumber('3')">3</button>
-            <button class="operator" onclick="appendOperator('+')">+</button>
+            <button class="number" onclick="appendNumber('1')" data-tooltip="Number 1">1</button>
+            <button class="number" onclick="appendNumber('2')" data-tooltip="Number 2">2</button>
+            <button class="number" onclick="appendNumber('3')" data-tooltip="Number 3">3</button>
+            <button class="operator" onclick="appendOperator('+')" data-tooltip="Addition">+</button>
 
             <!-- Row 5 -->
-            <button class="number" onclick="appendNumber('0')">0</button>
-            <button class="number" onclick="appendNumber('.')">.</button>
-            <button class="operator" onclick="calculateResult()">=</button>
+            <button class="number" onclick="appendNumber('0')" data-tooltip="Number 0">0</button>
+            <button class="number" onclick="appendNumber('.')" data-tooltip="Decimal point">.</button>
+            <button class="operator" onclick="calculateResult()" data-tooltip="Equals">=</button>
         </div>
     </div>
 
@@ -113,11 +136,8 @@
         let currentInput = "";
 
         function appendNumber(num) {
-            if(currentInput === "0" && num !== ".") {
-                currentInput = num;
-            } else {
-                currentInput += num;
-            }
+            if(currentInput === "0" && num !== ".") currentInput = num;
+            else currentInput += num;
             display.innerText = currentInput;
         }
 
@@ -133,6 +153,11 @@
         }
 
         function clearDisplay() {
+            currentInput = "";
+            display.innerText = "0";
+        }
+
+        function resetCalculator() {
             currentInput = "";
             display.innerText = "0";
         }
@@ -162,7 +187,7 @@
             }
         }
 
-        // Optional: keyboard support
+        // Keyboard support
         document.addEventListener("keydown", function(e) {
             if(!isNaN(e.key) || e.key === ".") appendNumber(e.key);
             if(["+", "-", "*", "/"].includes(e.key)) appendOperator(e.key);
@@ -173,4 +198,3 @@
     </script>
 </body>
 </html>
-

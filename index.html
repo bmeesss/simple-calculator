@@ -3,75 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Calculator</title>
+    <title>Calculator</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            padding: 50px;
+            height: 100vh;
+            background: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        input, select, button {
-            margin: 5px;
+
+        .calculator {
+            background: #222;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .display {
+            width: 100%;
+            height: 60px;
+            background: #000;
+            color: #0f0;
+            text-align: right;
+            font-size: 2rem;
             padding: 10px;
-            font-size: 16px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow-x: auto;
         }
-        h2 {
-            margin-top: 20px;
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 70px);
+            grid-gap: 10px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .number {
+            background: #333;
+            color: #fff;
+        }
+
+        .operator {
+            background: #ff9500;
+            color: #fff;
+        }
+
+        .special {
+            background: #555;
+            color: #fff;
+        }
+
+        button:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
 <body>
-    <h1>Simple Calculator</h1>
+    <div class="calculator">
+        <div id="display" class="display">0</div>
+        <div class="buttons">
+            <!-- Row 1 -->
+            <button class="special" onclick="clearDisplay()">C</button>
+            <button class="special" onclick="deleteLast()">DEL</button>
+            <button class="special" onclick="percent()">%</button>
+            <button class="operator" onclick="appendOperator('/')">÷</button>
 
-    <input type="number" id="num1" placeholder="First number">
-    <input type="number" id="num2" placeholder="Second number">
-    
-    <select id="operation">
-        <option value="add">Add</option>
-        <option value="subtract">Subtract</option>
-        <option value="multiply">Multiply</option>
-        <option value="divide">Divide</option>
-        <option value="percentage">Percentage</option>
-    </select>
+            <!-- Row 2 -->
+            <button class="number" onclick="appendNumber('7')">7</button>
+            <button class="number" onclick="appendNumber('8')">8</button>
+            <button class="number" onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="appendOperator('*')">×</button>
 
-    <button onclick="calculate()">Calculate</button>
+            <!-- Row 3 -->
+            <button class="number" onclick="appendNumber('4')">4</button>
+            <button class="number" onclick="appendNumber('5')">5</button>
+            <button class="number" onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="appendOperator('-')">-</button>
 
-    <h2 id="result"></h2>
+            <!-- Row 4 -->
+            <button class="number" onclick="appendNumber('1')">1</button>
+            <button class="number" onclick="appendNumber('2')">2</button>
+            <button class="number" onclick="appendNumber('3')">3</button>
+            <button class="operator" onclick="appendOperator('+')">+</button>
+
+            <!-- Row 5 -->
+            <button class="number" onclick="appendNumber('0')">0</button>
+            <button class="number" onclick="appendNumber('.')">.</button>
+            <button class="operator" onclick="calculateResult()">=</button>
+        </div>
+    </div>
 
     <script>
-        function calculate() {
-            const num1 = parseFloat(document.getElementById("num1").value);
-            const num2 = parseFloat(document.getElementById("num2").value);
-            const op = document.getElementById("operation").value;
+        let display = document.getElementById("display");
+        let currentInput = "";
 
-            if (isNaN(num1) || isNaN(num2)) {
-                document.getElementById("result").innerText = "❌ Please enter valid numbers!";
-                return;
+        function appendNumber(num) {
+            if(currentInput === "0" && num !== ".") {
+                currentInput = num;
+            } else {
+                currentInput += num;
             }
-
-            let result;
-            switch(op) {
-                case "add":
-                    result = num1 + num2;
-                    break;
-                case "subtract":
-                    result = num1 - num2;
-                    break;
-                case "multiply":
-                    result = num1 * num2;
-                    break;
-                case "divide":
-                    result = num2 === 0 ? "❌ Cannot divide by zero" : num1 / num2;
-                    break;
-                case "percentage":
-                    result = (num1 * num2) / 100;
-                    break;
-            }
-
-            document.getElementById("result").innerText = "Result: " + result;
+            display.innerText = currentInput;
         }
+
+        function appendOperator(op) {
+            if(currentInput === "") return;
+            const lastChar = currentInput[currentInput.length - 1];
+            if(["+", "-", "*", "/"].includes(lastChar)) {
+                currentInput = currentInput.slice(0, -1) + op;
+            } else {
+                currentInput += op;
+            }
+            display.innerText = currentInput;
+        }
+
+        function clearDisplay() {
+            currentInput = "";
+            display.innerText = "0";
+        }
+
+        function deleteLast() {
+            currentInput = currentInput.slice(0, -1);
+            display.innerText = currentInput || "0";
+        }
+
+        function percent() {
+            try {
+                currentInput = (eval(currentInput) / 100).toString();
+                display.innerText = currentInput;
+            } catch {
+                display.innerText = "Error";
+                currentInput = "";
+            }
+        }
+
+        function calculateResult() {
+            try {
+                currentInput = eval(currentInput).toString();
+                display.innerText = currentInput;
+            } catch {
+                display.innerText = "Error";
+                currentInput = "";
+            }
+        }
+
+        // Optional: keyboard support
+        document.addEventListener("keydown", function(e) {
+            if(!isNaN(e.key) || e.key === ".") appendNumber(e.key);
+            if(["+", "-", "*", "/"].includes(e.key)) appendOperator(e.key);
+            if(e.key === "Enter") calculateResult();
+            if(e.key === "Backspace") deleteLast();
+            if(e.key === "Escape") clearDisplay();
+        });
     </script>
 </body>
 </html>
+
